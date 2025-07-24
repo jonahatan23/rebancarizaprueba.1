@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REBANCARIZA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-users"></i>
+                <h1>REBANCARIZA</h1>
+                <p>Administra tus clientes y cuotas</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Usuario" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar Sesión
+                </button>
+            </form>
+            <div id="loginError" class="error-message" style="display: none;">
+                Usuario o contraseña incorrectos
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Principal -->
+    <div id="dashboard" class="dashboard" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <button id="mobileNavToggle" class="mobile-nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="logo">
+                    <i class="fas fa-users"></i>
+                    <span>REBANCARIZA</span>
+                </div>
+                <div class="user-menu">
+                    <button id="themeToggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <span id="welcomeUser">Bienvenido, Admin</span>
+                    <button id="logoutBtn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Overlay para móvil -->
+        <div id="mobileNavOverlay" class="mobile-nav-overlay"></div>
+
+        <!-- Navegación -->
+        <nav id="sidebar" class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-section="clients">
+                    <i class="fas fa-history"></i>
+                    <span>Historial</span>
+                </li>
+                <li class="nav-item" data-section="payments">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Pagos</span>
+                </li>
+                <li class="nav-item" data-section="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboardSection" class="content-section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <div class="date-info">
+                        <i class="fas fa-calendar"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+
+                <!-- Alertas -->
+                <div class="alerts-container">
+                    <div class="alert alert-danger" id="expiredAlert">
+                        <div class="alert-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Cuotas Vencidas</h3>
+                            <span class="alert-count" id="expiredCount">0</span>
+                        </div>
+                        <div class="alert-content" id="expiredList">
+                            <!-- Lista de clientes con cuotas vencidas -->
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning" id="dueSoonAlert">
+                        <div class="alert-header">
+                            <i class="fas fa-clock"></i>
+                            <h3>Próximos a Vencer (5 días)</h3>
+                            <span class="alert-count" id="dueSoonCount">0</span>
+                        </div>
+                        <div class="alert-content" id="dueSoonList">
+                            <!-- Lista de clientes próximos a vencer -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Balance Diario -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Balance Diario</h3>
+                        <div class="chart-controls">
+                            <select id="chartPeriod">
+                                <option value="7">Últimos 7 días</option>
+                                <option value="15">Últimos 15 días</option>
+                                <option value="30" selected>Últimos 30 días</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="balanceChart" width="800" height="300"></canvas>
+                    </div>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalClients">0</h3>
+                            <p>Total Clientes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeClients">0</h3>
+                            <p>Clientes Activos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalRevenue">S/ 0</h3>
+                            <p>Ingresos del Mes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingPayments">0</h3>
+                            <p>Clientes en Castigo</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clientes Section -->
+            <section id="clientsSection" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Historial</h2>
+                    <button id="addClientBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Nuevo Cliente
+                    </button>
+                </div>
+
+                <!-- Filtros -->
+                <div class="filters">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchClient" placeholder="Buscar cliente...">
+                    </div>
+                    <select id="statusFilter">
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Activo</option>
+                        <option value="castigo">Castigo</option>
+                    </select>
+                </div>
+
+                <!-- Tabla de Clientes -->
+                <div class="table-container">
+                    <table class="clients-table">
+                        <thead>
+                            <tr>
+                                <th>DNI/RUC</th>
+                                <th>Cliente</th>
+                                <th>Celular</th>
+                                <th>Descripción</th>
+                                <th>Fecha de Pago</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <!-- Datos de clientes se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para Agregar/Editar Cliente -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nuevo Cliente</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="clientForm" class="client-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientDni">DNI/RUC *</label>
+                        <input type="text" id="clientDni" placeholder="Ingrese DNI o RUC" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientName">Nombre Completo *</label>
+                        <input type="text" id="clientName" placeholder="Nombre completo del cliente" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientPhone">Celular *</label>
+                        <input type="tel" id="clientPhone" placeholder="Número de celular" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientDescription">Descripción</label>
+                        <input type="text" id="clientDescription" placeholder="Descripción del servicio/producto">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="managementDate">Fecha de Gestión *</label>
+                        <input type="date" id="managementDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentDate">Fecha de Pago *</label>
+                        <input type="date" id="paymentDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="monthlyFee">Monto (S/) *</label>
+                        <input type="number" id="monthlyFee" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientStatus">Estado *</label>
+                        <select id="clientStatus" required>
+                            <option value="">Seleccionar estado</option>
+                            <option value="activo">Activo</option>
+                            <option value="castigo">Castigo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
